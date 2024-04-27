@@ -12,9 +12,6 @@
 //   }
 // };
 
-import { error } from "console";
-import { promises } from "dns";
-
 //code for promise is below
 
 const asyncHandler = (requestHandler) => {
