@@ -15,11 +15,11 @@
 //code for promise is below
 
 const asyncHandler = (requestHandler) => {
-  (res, req, next) => {
+  return (req, res, next) => {
     Promise.resolve(requestHandler(req, res, next)).catch((error) =>
       next(error)
     );
   };
 };
 
-export default asyncHandler;
+export { asyncHandler };
