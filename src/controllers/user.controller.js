@@ -15,7 +15,8 @@ const registerUser = asyncHandler(async (req, res) => {
   // check for user creation
   // return res
   const { password, fullName, username, email } = req.body;
-  console.log("email", email);
+  //   console.log("email", email);
+  //   console.log("req.body", req.body);
 
   if (
     [password, fullName, username, email].some((field) => field?.trim() === "")
@@ -23,17 +24,24 @@ const registerUser = asyncHandler(async (req, res) => {
     throw new ApiError(400, "All field are required:(user.controller)");
   }
 
-  const existedUser = User.findOne({
+  const existedUser = await User.findOne({
     $or: [{ email }, { username }],
   });
 
   if (existedUser) {
     throw new ApiError(409, "User already exist");
   }
-  //console.log(req.files);
 
   const avatarLocalPath = req.files?.avatar[0]?.path;
-  const coverImageLocalPath = req.files?.coverImage[0]?.path;
+  //const coverImageLocalPath = req.files?.coverImage[0]?.path;
+  let coverImageLocalPath;
+  if (
+    req.files &&
+    Array.isArray(req.files.coverImage) &&
+    req.files.coverImage.length > 0
+  ) {
+    coverImageLocalPath = req.files.coverImage[0].path;
+  }
 
   if (!avatarLocalPath) {
     throw new ApiError(400, "Avatar file required ");
@@ -68,3 +76,39 @@ const registerUser = asyncHandler(async (req, res) => {
 });
 
 export { registerUser };
+
+//console.log(req.files); it gives below console
+// [Object: null prototype] {
+//     avatar: [
+//       {
+//         fieldname: 'avatar',
+//         originalname: 'Screenshot 2023-05-14 084845.png',
+//         encoding: '7bit',
+//         mimetype: 'image/png',
+//         destination: './public/temp',
+//         filename: 'Screenshot 2023-05-14 084845.png',
+//         path: 'public\\temp\\Screenshot 2023-05-14 084845.png',
+//         size: 227945
+//       }
+//     ],
+//     coverImage: [
+//       {
+//         fieldname: 'coverImage',
+//         originalname: 'Screenshot 2023-07-17 021703.png',
+//         encoding: '7bit',
+//         mimetype: 'image/png',
+//         destination: './public/temp',
+//         filename: 'Screenshot 2023-07-17 021703.png',
+//         path: 'public\\temp\\Screenshot 2023-07-17 021703.png',
+//         size: 484861
+//       }
+//     ]
+//   }
+
+//console.log(req.body)
+// req.body [Object: null prototype] {
+//     fullName: 'yash kedia',
+//     email: 'yash@gmail.com',
+//     password: 'kdkdkdkdkd',
+//     username: 'kd'
+//   }
