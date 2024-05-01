@@ -233,6 +233,18 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 
 export { registerUser, loginUser, logoutUser, refreshAccessToken };
 
+
+
+
+
+
+
+
+
+
+
+
+
 //console.log(req.files); it gives below console
 // [Object: null prototype] {
 //     avatar: [
