@@ -25,8 +25,21 @@ const uploadOnCloudinary = async (localFilePath) => {
   }
 };
 
-export { uploadOnCloudinary };
+const deleteFromCloudinary = async (path) => {
+  try {
+    let pathPublicId;
+    if (path) {
+      pathPublicId = path.split("/").pop().split(".")[0];
+    }
 
+    const response = await cloudinary.uploader.destroy(pathPublicId);
+    return response;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export { uploadOnCloudinary, deleteFromCloudinary };
 //its a boiler plate kinda code below
 // cloudinary.uploader.upload(
 //   "https://upload.wikimedia.org/wikipedia/commons/a/ae/Olympic_flag.jpg",
