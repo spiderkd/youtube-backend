@@ -49,7 +49,7 @@ const getAllVideos = asyncHandler(async (req, res) => {
     });
   }
   //query regex and
-  //options=i for case insensitive,m = for multiline
+  //options=i for case insensitive,m = for multiline etc
   //then pushed in pipeline
 
   pipelineStr.push({
