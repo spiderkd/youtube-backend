@@ -10,10 +10,18 @@ import {
 } from "../utils/cloudinary.js";
 
 const getAllVideos = asyncHandler(async (req, res) => {
-  const { page = 1, limit = 10, query, sortBy, sortType, userId } = req.query;
+  const {
+    page = 1,
+    limit = 10,
+    query,
+    option,
+    sortBy,
+    sortType,
+    userId,
+  } = req.query;
 
   //TODO: get all videos based on query, sort, pagination
-  const pipelineStr = [];
+  const pipelineStr = []; //created empty pipeline to be implemented
 
   if (!userId) {
     throw new ApiError(400, "User Id not provided");
@@ -29,23 +37,28 @@ const getAllVideos = asyncHandler(async (req, res) => {
         owner: new mongoose.Types.ObjectId(userId),
       },
     });
-  }
+  } //added match on the basis of owner aka user to pipeline
   if (query) {
     pipelineStr.push({
       $match: {
         title: {
           $regex: query,
-          $options: "i",
+          $options: option,
         },
       },
     });
   }
+  //query regex and
+  //options=i for case insensitive,m = for multiline
+  //then pushed in pipeline
 
   pipelineStr.push({
     $match: {
       isPublished: true,
     },
   });
+
+  //checking if is published is true
 
   if (sortBy && sortType) {
     pipelineStr.push({
@@ -56,6 +69,8 @@ const getAllVideos = asyncHandler(async (req, res) => {
   } else {
     pipelineStr.push({ $sort: { createdAt: -1 } });
   }
+
+  //added sort in pipeline (1 for ascending and -1 for descending )
 
   pipelineStr.push(
     {
@@ -74,17 +89,17 @@ const getAllVideos = asyncHandler(async (req, res) => {
         ],
       },
     },
-    { $unwind: "$ownerDetails" }
+    { $unwind: "$ownerDetails" } //to bring out object from the array returned from lookup
   );
+
   const videoAgg = await Video.aggregate(pipelineStr);
 
   const options = {
-    page: parseInt(page, 10),
-    limit: parseInt(limit, 10),
-  };
+    page: parseInt(page, 10), //Page = one which page are you
+    limit: parseInt(limit, 10), //limit = per page videos
+  }; //options for mongoose-aggregate-paginate-v2
 
   const video = await Video.aggregatePaginate(videoAgg, options);
-  console.log(video);
 
   return res
     .status(200)
